@@ -22,6 +22,7 @@ last_notified_prices = {
     "BTC/USDT": 0,
     "ETH/USDT": 0,
     "SOL/USDT": 0,
+    "BNB/USDT": 0,
 }
 
 async def get_price(symbol: str) -> float | None:
@@ -41,6 +42,8 @@ async def send_telegram_photo(photo_path: str, price: int, symbol: str):  # Ajou
             emoji = "💎"  # Diamant pour ETH
         elif symbol == "SOL/USDT":
             emoji = " Solana"  # Texte pour SOL car l'image contient déja l'emoji SOL
+        elif symbol == "BNB/USDT":
+            emoji = " BNB"  # Texte pour SOL car l'image contient déja l'emoji SOL
 
 
 
@@ -60,6 +63,7 @@ async def display_prices():
         "BTC/USDT": 1000,
         "ETH/USDT": 100,
         "SOL/USDT": 50,
+        "BNB/USDT": 50,
     }
 
 
