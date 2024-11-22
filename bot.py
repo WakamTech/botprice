@@ -56,38 +56,38 @@ async def send_telegram_photo(photo_path: str, price: int, symbol: str):  # Ajou
         print(f"Erreur lors de l'envoi de la photo : {e}")
 
 async def display_prices():
-    """Affiche les prix et envoie un message Telegram avec la logique "pas de répétition"."""
-
-
     symbols = {
         "BTC/USDT": 1000,
         "ETH/USDT": 100,
         "SOL/USDT": 50,
         "BNB/USDT": 50,
     }
-
-
-
+    first_run = True
 
     while True:
         for symbol, interval in symbols.items():
             price = await get_price(symbol)
-            print(price)
             if price is not None:
-                rounded_price = int(price // interval * interval)
-                price_diff = rounded_price - last_notified_prices[symbol]
+                rounded_price = int(price // interval * interval)  # Calcul du prix arrondi
                 print(price)
-                print(price_diff)
-                print(rounded_price)
+                print(int(price))
+                if first_run:
+                    image_path = f"images/{symbol.lower().replace('/', '')}/{symbol.lower().replace('/', '')}_{rounded_price}.jpg"
+                    if os.path.exists(image_path):
+                        await send_telegram_photo(image_path, rounded_price, symbol)
+                        last_notified_prices[symbol] = rounded_price
 
-                if abs(price_diff) >= interval:
-                    if rounded_price > last_notified_prices[symbol]  or rounded_price < last_notified_prices[symbol] :
-                        image_path = f"images/{symbol.lower().replace('/', '')}/{symbol.lower().replace('/', '')}_{rounded_price}.jpg" # Construction du chemin
+                elif int(price) == rounded_price:  # Comparaison avec le prix arrondi à l'entier
+                    if rounded_price != last_notified_prices[symbol]:
+                        image_path = f"images/{symbol.lower().replace('/', '')}/{symbol.lower().replace('/', '')}_{rounded_price}.jpg"
                         if os.path.exists(image_path):
-                            await send_telegram_photo(image_path, rounded_price, symbol) #  Passage du prix et symbole
+                            await send_telegram_photo(image_path, rounded_price, symbol)
                             last_notified_prices[symbol] = rounded_price
 
-        await asyncio.sleep(20)  # Vérification toutes les 20 secondes
+        if first_run:
+            first_run = False
+
+        await asyncio.sleep(20)
 
 async def main():
 
