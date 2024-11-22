@@ -72,11 +72,16 @@ async def display_prices():
     while True:
         for symbol, interval in symbols.items():
             price = await get_price(symbol)
+            print(price)
             if price is not None:
                 rounded_price = int(price // interval * interval)
                 price_diff = rounded_price - last_notified_prices[symbol]
+                print(price)
+                print(price_diff)
+                print(rounded_price)
+
                 if abs(price_diff) >= interval:
-                    if rounded_price > last_notified_prices[symbol] + interval or rounded_price < last_notified_prices[symbol] - interval:
+                    if rounded_price > last_notified_prices[symbol]  or rounded_price < last_notified_prices[symbol] :
                         image_path = f"images/{symbol.lower().replace('/', '')}/{symbol.lower().replace('/', '')}_{rounded_price}.jpg" # Construction du chemin
                         if os.path.exists(image_path):
                             await send_telegram_photo(image_path, rounded_price, symbol) #  Passage du prix et symbole
